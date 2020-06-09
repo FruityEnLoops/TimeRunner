@@ -29,9 +29,12 @@ public class Task implements Serializable{
 		return this.title + " (" + this.getStatus() + ")";
 	}
 	
+	// creates the Timeline object 
+	// (as its transient, it needs to be reinitialize each time)
+	// and plays the animation defined in the KeyFrame
 	public void startTimer() {
 		this.time = new Timeline(new KeyFrame(
-		        Duration.millis(100),
+		        Duration.millis(timerRefreshRate),
 		        ae -> timer())
 				);
 		this.time.setCycleCount(Animation.INDEFINITE);
@@ -41,6 +44,7 @@ public class Task implements Serializable{
 		}
 	}
 	
+	// stops timer and unmarks it as being playing
 	public void stopTimer() {
 		if(playing) {
 			this.time.pause();
@@ -48,10 +52,14 @@ public class Task implements Serializable{
 		}
 	}
 	
+	// commands to be ran by the timer, each (timerRefreshRate)ms
+	// this is where EventController.updateTimer(); should have been used
+	// this function is obsolete and could be removed (passing the line it executes rather than the function call)
 	public void timer() {
 		this.adjustTime(timerRefreshRate);
 	}
 	
+	// returns the status corresponding to the current timer state
 	public String getStatus() {
 		if(playing) {
 			return "En cours";
@@ -59,6 +67,7 @@ public class Task implements Serializable{
 		return "Arrêtée";
 	}
 	
+	// adjusts time by a given double value (in ms)
 	public void adjustTime(double d) {
 		this.currentTime = this.currentTime.add(new Duration(d));
 	}
