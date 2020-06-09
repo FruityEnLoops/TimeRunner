@@ -109,8 +109,8 @@ public class EventController {
 	    	if(!c.getList().isEmpty()) {
 		    	currentTime.setText(c.getList().get(0).currentTime.toSeconds() + "s");
 		    	currentStatus.setText(c.getList().get(0).getStatus());
-		    	taskPanelTitle.setText(c.getList().get(0).toString());
-		    	taskNameEditField.setText(c.getList().get(0).toString());
+		    	taskPanelTitle.setText(c.getList().get(0).title);
+		    	taskNameEditField.setText(c.getList().get(0).title);
 	    	}
 	    }
   	}
@@ -173,6 +173,7 @@ public class EventController {
 				statusBar.setText("Tâches en cours : " + currentlyRunningTaskCount);
 			}
 			currentStatus.setText(this.taskView.getSelectionModel().getSelectedItem().getStatus());
+			updateListView();
 		}
 	}
 	
