@@ -29,9 +29,9 @@ public class Task implements Serializable{
 		return this.title + " (" + this.getStatus() + ")";
 	}
 	
-	// creates the Timeline object 
-	// (as its transient, it needs to be reinitialize each time)
-	// and plays the animation defined in the KeyFrame
+	// crée l'objet timeline
+	// (car il est transient, puisque Timeline n'est pas sérializable, il doit être réinitialisé a chaque démarrage du programme)
+	// puis lance le timer
 	public void startTimer() {
 		this.time = new Timeline(new KeyFrame(
 		        Duration.millis(timerRefreshRate),
@@ -44,22 +44,23 @@ public class Task implements Serializable{
 		}
 	}
 	
-	// stops timer and unmarks it as being playing
+	// arrête le timer
 	public void stopTimer() {
 		if(playing) {
 			this.time.pause();
 			playing = !playing;
 		}
 	}
-	
-	// commands to be ran by the timer, each (timerRefreshRate)ms
-	// this is where EventController.updateTimer(); should have been used
-	// this function is obsolete and could be removed (passing the line it executes rather than the function call)
+
+	// fonction démarrée a chaque (timerRefreshRate)ms
+	// c'est ici que EventController.updateTimer(); aurait du être
+	// j'ai gardé cette fonction au cas ou je trouve un fix
+	// mais a ce stade cette fonction est obsolète et la ligne devrait être passée a la KeyFrame pour éviter un appel de fonction
 	public void timer() {
 		this.adjustTime(timerRefreshRate);
 	}
 	
-	// returns the status corresponding to the current timer state
+	// renvoi le statut correspondant
 	public String getStatus() {
 		if(playing) {
 			return "En cours";
@@ -67,7 +68,7 @@ public class Task implements Serializable{
 		return "Arrêtée";
 	}
 	
-	// adjusts time by a given double value (in ms)
+	// ajoute (d)ms a la tâche courante (négatif, ou positif)
 	public void adjustTime(double d) {
 		this.currentTime = this.currentTime.add(new Duration(d));
 	}

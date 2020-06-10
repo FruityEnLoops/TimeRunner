@@ -59,7 +59,7 @@ public class EventController {
 	
 	public int currentlyRunningTaskCount = 0;
 	
-	// makes sure every label has its content, and default texts
+	// force les textes par défaut des label et des textfield
 	public void initialize() {
 		taskView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		taskView.getSelectionModel().getSelectedItems().addListener(new ListListener());
@@ -70,12 +70,12 @@ public class EventController {
 		updateListView();
 	}
 
-	// handles quit MenuItem
+	// ferme le stage depuis l'eventcontroller
 	public void clickedQuitter(ActionEvent event){
 		Platform.exit();
 	}
 	
-	// handles about Window
+	// fait apparaitre la fenêtre "a propos"
 	public void clickedAbout(ActionEvent event) throws IOException {
 		System.out.println("[DEBUG] Opening aboutWindow...");
 		Stage aboutWindow = new Stage();
@@ -91,25 +91,25 @@ public class EventController {
 		aboutWindow.show();
 	}
 	
-	// delegate method so it can be called by EventController to Main
+	// méthode déléguée de Main.addTask();, se charge aussi de rafraichir la listView
 	public void createTask() {
 		Main.addTask(new Task(createTaskNameField.getText()));
 		updateListView();
 	}
 	
-	// handles manual save
+	// se charge de la sauvegarde manuelle, méthode déléguée de Main.save();
 	public void clickedSave(ActionEvent event) {
 		Main.save();
 		System.out.println("[DEBUG] (manual save triggered)");
 	}
 	
-	// handy to refresh whenever any function needs it
+	// pratique pour mettre a jour la listView quand une fonction en a besoin
 	public void updateListView() {
 		taskView.getItems().clear();
 		taskView.getItems().addAll(Main.taskList);
 	}
 	
-	// handles selection changes on the listView, to update the right panel
+	// listener pour mettre a jour la partie droite de l'interface quand on selectionne une tâche de la listView
 	class ListListener implements ListChangeListener<Task> {
 	    public void onChanged(javafx.collections.ListChangeListener.Change<? extends Task> c){
 	    	if(!c.getList().isEmpty()) {
@@ -121,7 +121,7 @@ public class EventController {
 	    }
   	}
 	
-	// handles updating task info
+	// permet de renommer une tâche
 	public void renameTask(ActionEvent event) {
 		if(this.taskView.getSelectionModel().getSelectedItem() != null) {
 			this.taskView.getSelectionModel().getSelectedItem().title = this.taskNameEditField.getText();
@@ -129,7 +129,7 @@ public class EventController {
 		updateListView();
 	}
 	
-	// handles parsing the textField, and safely passing it to the adjustTime(); function
+	// sert a récuperer le temps contenu dans le textField, le vérifier, puis le passer a Task.adjustTime();
 	public void adjustTimePlus(ActionEvent event) {
 		if(this.taskView.getSelectionModel().getSelectedItem() != null) {
 			int time = 0;
@@ -166,7 +166,7 @@ public class EventController {
 		}
 	}
 	
-	// handles starting and pausing the timer, while updating any label that needs update (and updating the listView)
+	// démarre et arrête le timer, et met a jour les label / listView
 	public void timerButton(ActionEvent event) {
 		if(this.taskView.getSelectionModel().getSelectedItem() != null) {
 			if(this.taskView.getSelectionModel().getSelectedItem().playing) {
@@ -186,16 +186,16 @@ public class EventController {
 		}
 	}
 	
-	// unused code
-	// would update the timer info on the right panel
-	// would need to be static to work (as to be called by Task) 
-	// however setting it to static just wouldn't work as any variable in it would need to be static as well
+	// code non utilisé
+	// devait mettre a jour le temps actuel de la tâche, mais ne peut être appelé que depuis l'event controller (non statique)
+	// rendre cette fonction statique impliquerait que toutes les variables sont statiques
+	// donc inutilisée
 	public void updateTimer() {
 		currentTime.setText(taskView.getSelectionModel().getSelectedItem().currentTime.toSeconds() + "s");
 	}
 	
-	// delegate method, with a warning to the user 
-	// (and update so you can't select any null item, even though all functions are secured against null items)
+	// méthode déleguée, qui se charge d'avertir l'utilisateur avant la suppression
+	// (et mettre a jour pour que la listView affiche le changement en temps réel)
 	public void removeTask() {
 		if(this.taskView.getSelectionModel().getSelectedItem() != null) {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -213,7 +213,7 @@ public class EventController {
 		}
 	}
 	
-	// opens a simple window with a PieChart with current data
+	// ouvre une fenêtre contenant une PieChart avec les données des tâches actuelles
 	public void openStatistics(ActionEvent event) throws IOException {
 		Stage stat = new Stage();
 		PieChart chart = new PieChart();

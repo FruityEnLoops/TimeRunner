@@ -40,17 +40,17 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		System.out.println("[DEBUG] Starting up...");
 		
-		// initializes the ArrayList, for later use (if an empty file needs to be generated)
+		// initialise l'ArrayList, au cas ou on doit générer un fichier vide
 		Main.taskList = new ArrayList<Task>();
 		
 		Application.launch(args);
 	}
         
 	public void stop() {
-		// Check if any tasks are still running
+		// vérifie qu'aucune tâche n'est encore en cours
 		boolean check = checkForRunningTasks();
 		if(check) {
-			// Warn the user if tasks were still running ; even though they were stopped for them
+			// avertis l'utilisateur si c'était le cas
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Attention");
 			alert.setHeaderText("Une ou plusieurs tâches étaient encore en cours.");
@@ -65,10 +65,10 @@ public class Main extends Application {
 		System.out.println("[DEBUG] Saving...");
 		ObjectOutputStream saveFile = null;
 	    try {
-	    	// Tries to open output
+	    	// essaye d'ouvrir l'outputFile
 			final FileOutputStream fichier = new FileOutputStream("list.tasks");
 			saveFile = new ObjectOutputStream(fichier);
-			// and writes serialized object taskList to it
+			// écrit l'objet dans le fichier
 			saveFile.writeObject(taskList);
 		} catch (final java.io.IOException e) {
 			e.printStackTrace();
@@ -84,32 +84,34 @@ public class Main extends Application {
 	    }
 	}
 	
-	// static method to create a task
+	// méthode statique pour créer une tâche
 	public static void addTask(Task t) {
 		taskList.add(t);
 		System.out.println("[DEBUG] Added task");
 		System.out.println("[DEBUG] " + t);
 	}
 	
-	// static method to remove a task
+	// méthode statique pour supprimer une tâche
 	public static void removeTask(Task t) {
-		// make sure it is stopped before removing
+		// vérifier qu'elle est bien arrêtée avant de la supprimer
+		// (si la tâche n'était pas en cours, cette méthode n'a aucun effet)
 		t.stopTimer();
-		// remove the task
+		// supprimer la tâche
 		taskList.remove(t);
 		System.out.println("[DEBUG] Removed task");
 		System.out.println("[DEBUG] " + t);
 	}
 	
 	@SuppressWarnings("unchecked")
-	// imports saved serialized data
+	// importe les données sérialisées
 	public static void importSerialized() {
 		FileInputStream inputFile = null;
 		try {
-			// tries to open input file
+			// essaye d'ouvrir l'inputFile
 			inputFile = new FileInputStream("list.tasks");
 		} catch (FileNotFoundException e) {
-			// warn the user, and allows user to generate an empty file (otherwise you'd never be able to access the program to create a save file)
+			// si fichier vide
+			// avertir l'utilisateur, et permettre la génération d'un fichier vide
 			System.out.println("[ERROR] File not found.");
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Erreur");
@@ -120,6 +122,7 @@ public class Main extends Application {
 			alert.getButtonTypes().setAll(generate, cancel);
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == cancel){
+				// sinon quitter
 				System.exit(1);
 			}
 			if (result.get() == generate){
@@ -144,13 +147,13 @@ public class Main extends Application {
 			}
 		}
 		try {
-			// file is correct, so read the serialized object to taskList
+			// le fichier est correct, donc on lit les données
 			inputFile = new FileInputStream("list.tasks");
 			ObjectInputStream taskInput = new ObjectInputStream(inputFile);
 			Main.taskList = (ArrayList<Task>) taskInput.readObject();
 			taskInput.close();
 		} catch (IOException | ClassNotFoundException e) {
-			// file is incorrect; avoid using corrupted / data that isn't the object
+			// fichier incorrect : on évite de lire des données invalides / corrompues
 			System.out.println("[ERROR] Invalid file.");
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Erreur");
@@ -160,10 +163,10 @@ public class Main extends Application {
 			System.exit(1);
 		}
 	}
-	
-	// checks if tasks are still running, and stops them
-	// it is important because otherwise tasks would get stored in a playing phase, and program would crash (as the Timeline object would be null, because it is transient)
-	// anything saved in the serialized file needs to NOT be playing
+		
+	// vérifie si des tâches sont encore actives
+	// très important car sinon les tâches seraient stockées dans un êtat "en cours", et le programme crasherait, car il essaierait d'arrêter une Timeline nulle, car objet transient
+	// tout ce qui est sauvegardé ne doit PAS être "en cours"
 	public boolean checkForRunningTasks() {
 		boolean flag = false;
 		for(int i = 0; i < Main.taskList.size(); i++) {
